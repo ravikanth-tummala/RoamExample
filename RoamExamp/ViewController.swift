@@ -63,15 +63,7 @@ class ViewController: UIViewController,UITextFieldDelegate{
     }
     
     @IBAction func startTracking(_ sender: Any) {
-        
-        var updateInterval:Int?
-        if let update = updateTextfield.text {
-            updateInterval = Int(update)
-
-        }else{
-            updateInterval = 300
-        }
-     
+    
         UserDefaults.standard.set(true, forKey: "trackings")
         UserDefaults.standard.synchronize()
         
@@ -86,7 +78,7 @@ class ViewController: UIViewController,UITextFieldDelegate{
         customOptions.useSignificant = true
        customOptions.useStandardLocationServices = false
        customOptions.useRegionMonitoring  = true
-        customOptions.updateInterval = updateInterval
+        customOptions.updateInterval = 300
         Roam.startTracking(.custom, options: customOptions)
         
         self.startTrackingBtn.isEnabled = false
