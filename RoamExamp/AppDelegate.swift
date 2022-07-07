@@ -20,13 +20,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate,RoamDelegate,UNUserNotific
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             print(granted)
             print(error.debugDescription)
-            if let error = error {
-                print("D'oh: \(error.localizedDescription)")
-            } else {
-                DispatchQueue.main.async {
-                    application.registerForRemoteNotifications()
-                }
-            }
         }
 
         return true
@@ -56,8 +49,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate,RoamDelegate,UNUserNotific
         content.title = "location \(String(describing: motion.userId!))"
         content.subtitle = motion.location.description
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-        let request = UNNotificationRequest(identifier: "notification.id.01", content: content, trigger: trigger)
-        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+        let request = UNNotificationRequest(identifier: "notification.id.01".random(), content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request) { (error) in
+            print("error\(error )")
+        }
+
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
@@ -70,12 +66,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate,RoamDelegate,UNUserNotific
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         print(response)
+        return completionHandler()
+
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.alert,.sound])
+        completionHandler([.alert,.sound,.banner,.badge])
     }
 
 
 }
 
+extension String {
+     func random() -> String {
+        let base = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        var randomString: String = ""
+
+        for _ in 0..<5 {
+            let randomValue = arc4random_uniform(UInt32(base.count))
+            randomString += "\(base[base.index(base.startIndex, offsetBy: Int(randomValue))])"
+        }
+        return randomString
+    }
+}
